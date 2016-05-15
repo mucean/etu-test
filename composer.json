@@ -1,0 +1,11 @@
+{
+    "require": {
+        "mucean/etu": "dev-master"
+    },
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:mucean/etu.git"
+        }
+    ]
+}
