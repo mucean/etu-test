@@ -2,4 +2,6 @@
 
 include './boot.php';
 
-echo 'hello, world!';
+$app = new \Etu\Application();
+
+$app->run();

@@ -4,8 +4,8 @@ namespace Controller;
 
 class Index
 {
-    public function ecAa()
+    public function get()
     {
-        echo 'Index file', PHP_EOL;
+        $this->response->write('Hello, world!');
     }
 }
