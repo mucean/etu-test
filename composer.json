@@ -1,6 +1,8 @@
 {
     "require": {
-        "mucean/etu": "dev-master"
+        "mucean/etu": "dev-master",
+        "predis/predis": "^1.0",
+        "guzzlehttp/guzzle": "~6.2"
     },
     "repositories": [
         {
