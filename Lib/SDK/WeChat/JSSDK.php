@@ -4,13 +4,14 @@ namespace Lib\SDK\WeChat;
 
 use Lib\SDK\RequestTrait;
 use Lib\SDK\Service\Cache;
+use Lib\SDK\LogTrait;
 
 /**
  * Class JSSDK
  */
 class JSSDK
 {
-    use RequestTrait;
+    use RequestTrait, LogTrait;
 
     protected $accessToken;
 
@@ -111,10 +112,5 @@ class JSSDK
         }
 
         return $str;
-    }
-
-    protected function logError($message)
-    {
-        error_log($message);
     }
 }

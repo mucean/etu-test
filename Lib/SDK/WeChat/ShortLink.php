@@ -3,12 +3,13 @@
 namespace Lib\SDK\WeChat;
 
 use Lib\SDK\RequestTrait;
+use Lib\SDK\LogTrait;
 use Lib\SDK\Interfaces\ShortLinkInterface;
 use Lib\SDK\Service\Cache;
 
 class ShortLink implements ShortLinkInterface
 {
-    use RequestTrait;
+    use RequestTrait, LogTrait;
 
     protected $accessToken;
 
@@ -69,10 +70,5 @@ class ShortLink implements ShortLinkInterface
         }
 
         return true;
-    }
-
-    protected function logError($message)
-    {
-        \logger()->warning($message);
     }
 }

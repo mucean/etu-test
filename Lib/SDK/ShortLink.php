@@ -56,9 +56,4 @@ class ShortLink
 
         return $link;
     }
-
-    protected function logError($message)
-    {
-        \logger()->warning($message);
-    }
 }

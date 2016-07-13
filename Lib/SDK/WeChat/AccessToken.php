@@ -4,6 +4,7 @@ namespace Lib\SDK\WeChat;
 
 use Lib\SDK\Interfaces\AccessInterface;
 use Lib\SDK\RequestTrait;
+use Lib\SDK\LogTrait;
 use Lib\SDK\Service\Cache;
 
 /**
@@ -11,7 +12,7 @@ use Lib\SDK\Service\Cache;
  */
 class AccessToken implements AccessInterface
 {
-    use RequestTrait;
+    use RequestTrait, LogTrait;
 
     protected $appID = 'wx5d1b1e5c687de420';
 
@@ -86,10 +87,5 @@ class AccessToken implements AccessInterface
     public function getAppID()
     {
         return $this->appID;
-    }
-
-    protected function logError($message)
-    {
-        error_log($message);
     }
 }

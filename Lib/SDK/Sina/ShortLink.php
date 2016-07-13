@@ -5,10 +5,11 @@ namespace Lib\SDK\Sina;
 use Lib\SDK\RequestTrait;
 use Lib\SDK\Interfaces\ShortLinkInterface;
 use Lib\SDK\Service\Cache;
+use Lib\SDK\LogTrait;
 
 class ShortLink implements ShortLinkInterface
 {
-    use RequestTrait;
+    use RequestTrait, LogTrait;
 
     protected $appKey;
 
@@ -81,10 +82,5 @@ class ShortLink implements ShortLinkInterface
         }
 
         return true;
-    }
-
-    protected function logError($message)
-    {
-        \logger()->warning($message);
     }
 }
