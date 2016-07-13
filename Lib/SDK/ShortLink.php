@@ -2,7 +2,7 @@
 
 namespace Lib\SDK;
 
-use Lib\SDK\WeChat\AccessToken;
+use Lib\SDK\Service\Cache;
 
 /**
  * Class ShortLink
@@ -11,50 +11,54 @@ class ShortLink
 {
     use RequestTrait;
 
-    protected $accessToken;
+    protected $cache;
+
+    const CACHE_TTL = 86400;
+
+    protected $servers = [
+        'weChat' => '\Lib\SDK\WeChat\ShortLink',
+        'Sina' => '\Lib\SDK\Sina\ShortLink'
+    ];
 
     public function __construct()
     {
-        $this->accessToken = new AccessToken();
+        $this->cache = new Cache(get_called_class());
     }
 
     public function getShortLink($link)
     {
-        $response = $this->getRequest(
-            'https://api.weixin.qq.com/cgi-bin/shorturl',
-            '',
-            'POST',
-            [
-                'query' => [
-                    'access_token' => $this->accessToken->getAccessToken(),
-                ],
-                'json' => [
-                    'action' => 'long2short',
-                    'long_url' => $link
-                ]
-            ]
-        );
-
-        if ($response === false) {
-            $this->logError('get short link failed');
-            return false;
+        $cacheKey = $this->cache->getCacheKey([$link]);
+        $cacheServer = $this->cache->getCacheService();
+        if ($shortLink = $cacheServer->get($cacheKey)) {
+            return $shortLink;
         }
 
-        $data = json_decode((string) $response->getBody(), true);
+        foreach ($this->servers as $server) {
+            if (!class_exists($server)) {
+                throw new \RuntimeException();
+            }
+            /** @var $server ShortLinkInterface*/
+            $server = new $server();
+            if (!$server->isEnable()) {
+                continue;
+            }
 
-        if (isset($data['errcode']) && (int) $data['errcode'] === 0) {
-            return $data['short_url'];
+            $shortLink = $server->getShortLink($link);
+            if ($shortLink !== false) {
+                $link = $shortLink;
+                $cacheServer->set($cacheKey, $link);
+                $cacheServer->expire($cacheKey, self::CACHE_TTL);
+                break;
+            }
+
+            continue;
         }
 
-        $this->logError(isset($data['errmsg'])
-            ? 'get short link failed, code '. $data['errcode'] . '|| message: ' . $data['errmsg']
-            : 'get short link failed');
-
-        return false;
+        return $link;
     }
 
     protected function logError($message)
     {
-        error_log($message);
+        \logger()->warning($message);
     }
 }

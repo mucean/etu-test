@@ -3,8 +3,7 @@
 namespace Lib\SDK\WeChat;
 
 use Lib\SDK\RequestTrait;
-use Predis\Client as RedisClient;
-use Psr\Http\Message\ServerRequestInterface;
+use Lib\SDK\Service\Cache;
 
 /**
  * Class JSSDK
@@ -15,12 +14,15 @@ class JSSDK
 
     protected $accessToken;
 
+    protected $cache;
+
     public function __construct()
     {
         $this->accessToken = new AccessToken();
+        $this->cache = new Cache(get_called_class());
     }
 
-    public function getConfig(ServerRequestInterface $request)
+    public function getConfig($url)
     {
         $timestamp = time();
         $nonceStr = $this->getNonceStr();
@@ -28,17 +30,15 @@ class JSSDK
             'appId' => $this->accessToken->getAppID(),
             'timestamp' => $timestamp,
             'nonceStr' => $nonceStr,
-            'signature' => $this->getSignature($request, $timestamp, $nonceStr)
+            'signature' => $this->getSignature($url, $timestamp, $nonceStr)
         ];
     }
 
     public function getSignature(
-        ServerRequestInterface $request,
+        $url,
         $timestamp,
         $nonceStr
     ) {
-        $uri = $request->getUri();
-        $url = (string) $uri->withFragment('');
         $data = [
             sprintf('jsapi_ticket=%s', $this->getJsTicket()),
             sprintf('noncestr=%s', $nonceStr),
@@ -52,8 +52,8 @@ class JSSDK
 
     public function getJsTicket()
     {
-        $cacheServer = $this->getCacheServer();
-        $cacheKey = $this->getCacheKey('jsTicket');
+        $cacheServer = $this->cache->getCacheService();
+        $cacheKey = $this->cache->getCacheKey();
 
         if ($jsTicket = $cacheServer->get($cacheKey)) {
             return $jsTicket;
@@ -111,17 +111,6 @@ class JSSDK
         }
 
         return $str;
-    }
-
-    protected function getCacheKey($which)
-    {
-        return sprintf('weChat:%s', $which);
-    }
-
-    protected function getCacheServer()
-    {
-        $redisServer = new RedisClient();
-        return $redisServer;
     }
 
     protected function logError($message)

@@ -3,6 +3,7 @@
 namespace Lib\SDK;
 
 use GuzzleHttp\Client as HttpClient;
+use InvalidArgumentException;
 
 /**
  * Trait RequestTrait

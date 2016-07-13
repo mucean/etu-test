@@ -2,10 +2,9 @@
 
 namespace Lib\SDK\WeChat;
 
-use Lib\SDK\AccessInterface;
-use Predis\Client as RedisClient;
+use Lib\SDK\Interfaces\AccessInterface;
 use Lib\SDK\RequestTrait;
-use InvalidArgumentException;
+use Lib\SDK\Service\Cache;
 
 /**
  * Class AccessToken
@@ -18,6 +17,8 @@ class AccessToken implements AccessInterface
 
     protected $appSecret = 'd4624c36b6795d1d99dcf0547af5443d';
 
+    protected $cache;
+
     public function __construct($appID = null, $appSecret = null)
     {
         if ($appID !== null) {
@@ -27,12 +28,14 @@ class AccessToken implements AccessInterface
         if ($appSecret !== null) {
             $this->appSecret = $appSecret;
         }
+
+        $this->cache = new Cache(get_called_class());
     }
 
     public function getAccessToken()
     {
-        $cacheServer = $this->getCacheServer();
-        $cacheKey = $this->getCacheKey('accessToken');
+        $cacheServer = $this->cache->getCacheService();
+        $cacheKey = $this->cache->getCacheKey();
 
         if ($accessToken = $cacheServer->get($cacheKey)) {
             return $accessToken;
@@ -83,17 +86,6 @@ class AccessToken implements AccessInterface
     public function getAppID()
     {
         return $this->appID;
-    }
-
-    protected function getCacheKey($which)
-    {
-        return sprintf('weChat:%s', $which);
-    }
-
-    protected function getCacheServer()
-    {
-        $redisServer = new RedisClient();
-        return $redisServer;
     }
 
     protected function logError($message)

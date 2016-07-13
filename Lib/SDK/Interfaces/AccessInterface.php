@@ -1,6 +1,6 @@
 <?php
 
-namespace Lib\SDK;
+namespace Lib\SDK\Interfaces;
 
 /**
  * Interface AccessInterface
