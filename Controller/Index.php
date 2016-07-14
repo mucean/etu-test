@@ -6,8 +6,7 @@ class Index
 {
     public function get()
     {
-        $this->response->write('Hello, world!' . PHP_EOL)
-            ->write($this->request->getUri()->getQuery());
+        $this->response->write(phpinfo());
     }
 
     public function post()
