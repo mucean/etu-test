@@ -4,7 +4,6 @@ namespace Lib\SDK\Service;
 
 use Predis\Client as RedisClient;
 use InvalidArgumentException;
-use RuntimeException;
 
 class Cache
 {
@@ -40,24 +39,15 @@ class Cache
         }
 
         if (isset($conf['parameters']) && is_array($conf['parameters'])) {
-            $userParameters = $conf['parameters'];
+            $this->userParameters = $conf['parameters'];
         }
 
         if (isset($conf['options']) && is_array($conf['options'])) {
-            $userParameters = $conf['options'];
+            $this->userOptions = $conf['options'];
         }
 
         $this->calledClass = $className;
     }
-
-    /* public function __call($method, $args = [])
-    {
-        if ($this->redisClient === null) {
-            $this->redisClient = $this->getCacheService();
-        }
-
-        return call_user_func_array([$this->redisClient, $method], $args);
-    } */
 
     public function getCacheService()
     {
@@ -70,9 +60,8 @@ class Cache
     public function getCacheKey(array $parts = [], $key = '')
     {
         $cacheKey = $this->cacheKeyMap[$this->calledClass];
-        if (!$key) {
-            $cacheKey = $cacheKey;
-        } elseif (is_array($cacheKey) && isset($cacheKey[$key])) {
+
+        if ($key && is_array($cacheKey) && isset($cacheKey[$key])) {
             $cacheKey = $cacheKey[$key];
         }
 

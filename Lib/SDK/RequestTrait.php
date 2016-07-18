@@ -20,7 +20,7 @@ trait RequestTrait
                 $path = '';
             }
         } elseif ($path === null) {
-            throw InvalidArgumentException();
+            throw new InvalidArgumentException();
         }
 
         $client = new HttpClient($args);
