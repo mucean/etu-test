@@ -1,16 +1,21 @@
 <?php
 namespace Model\Queue;
 
+use AMQPExchange;
+use AMQPChannel;
+
 /**
  * Class Exchange
  */
 class Exchange
 {
-    use ModdlewareTrait;
+    use Middleware;
 
     protected $routingKey = null;
     protected $flags = AMQP_NOPARAM;
     protected $attributes = [];
+
+    protected $exchange;
 
     public static function publish($message, $routingKey = null, $flags = null, $attributes = null)
     {
@@ -35,9 +40,21 @@ class Exchange
 
     public function __construct()
     {
+        $this->exchange = new AMQPChannel($this->getChannel());
     }
 
-    protected function __invoke(Exchange $exchange)
+    protected function getChannel()
+    {
+        ;
+    }
+
+    protected function __call($method, $args)
+    {
+        $method();
+        return $args;
+    }
+
+    protected function __invoke(APQMExchange $exchange)
     {
         return $exchange;
     }
