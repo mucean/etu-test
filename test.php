@@ -2,14 +2,31 @@
 
 require __DIR__ . '/boot.php';
 
-$mysql = new \Etu\Service\Sql\Mysql([
-    'dsn' => 'mysql:host=127.0.0.1;dbname=lottery',
+/*$mysql = new \Etu\Service\Sql\Mysql([
+    //'dsn' => 'mysql:host=127.0.0.1;dbname=lottery',
+    'dsn' => 'mysql:host=127.0.0.1;dbname=test',
     'user' => 'root',
     'password' => 'omymysql'
-]);
+]);*/
 
-//$statement = $mysql->execute('SELECT * FROM ? WHERE userId = ?', ['users', 10000000]);
-$statement = $mysql->execute('SELECT * FROM users WHERE userId = ?', [10000000]);
-echo $statement->queryString, PHP_EOL;
-$statement->debugDumpParams();
-//var_dump($statement->fetchAll());
+/*$delete = $mysql->delete('order');
+
+var_dump($delete->where('id = ?', 2)->execute());*/
+
+/*$insert = $mysql->insert('order');
+
+var_dump($insert->setColumns('id', 'name')->setValues([2, 'hello'])->execute());*/
+
+\Etu\Service\Container::getInstance()->addService('test', function () {
+    return new \Etu\Service\Sql\Mysql([
+        'dsn' => 'mysql:host=127.0.0.1;dbname=test',
+        'user' => 'root',
+        'password' => 'omymysql'
+    ]);
+});
+
+$select = \Model\User\Entity::select();
+
+$select->where('userId = ?', 10000001);
+
+var_dump($select->get());
